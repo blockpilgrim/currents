@@ -1,29 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#0f0a1e">
+    <meta name="theme-color" content="#0a0e1a">
     <title>Currents - Birthday Edition</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Lora:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap');
+
+        /* Typography System
+         * - Playfair Display: Brand, display headings, decorative numbers
+         * - Lora: Card question text (readable serif that complements Playfair)
+         * - Inter: UI elements, buttons, labels, body text
+         */
 
         :root {
-            --bg-primary: #0f0a1e;
-            --bg-secondary: #1a1233;
-            --accent-rose: #e8a4b8;
-            --accent-gold: #d4a574;
-            --accent-warm: #c9a87c;
-            --text-primary: #f5f0eb;
-            --text-secondary: rgba(245, 240, 235, 0.7);
-            --text-muted: rgba(245, 240, 235, 0.5);
-            --glass-bg: rgba(255, 255, 255, 0.06);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --card-glow: rgba(232, 164, 184, 0.15);
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #141a2e;
+            --accent-primary: #6a5acd;
+            --accent-light: #8b7fd4;
+            --accent-soft: #b8b0e8;
+            --accent-glow: #9d8cff;
+            --accent-warm: #c9b5e3;
+            --text-primary: #f0f2f8;
+            --text-secondary: rgba(240, 242, 248, 0.7);
+            --text-muted: rgba(240, 242, 248, 0.5);
+            --glass-bg: rgba(106, 90, 205, 0.08);
+            --glass-border: rgba(106, 90, 205, 0.2);
+            --card-glow: rgba(106, 90, 205, 0.25);
             --safe-top: env(safe-area-inset-top);
             --safe-bottom: env(safe-area-inset-bottom);
+
+            /* Font stacks with robust fallbacks */
+            --font-display: 'Playfair Display', Georgia, 'Times New Roman', Times, serif;
+            --font-body-serif: 'Lora', Georgia, 'Times New Roman', Times, serif;
+            --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         }
 
         * {
@@ -33,13 +47,14 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        html, body {
+        html,
+        body {
             height: 100%;
             overflow: hidden;
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: var(--font-ui);
             background: var(--bg-primary);
             color: var(--text-primary);
             line-height: 1.6;
@@ -50,10 +65,10 @@
             content: '';
             position: fixed;
             inset: 0;
-            background: 
-                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(232, 164, 184, 0.15) 0%, transparent 50%),
-                radial-gradient(ellipse 60% 40% at 100% 100%, rgba(212, 165, 116, 0.1) 0%, transparent 50%),
-                radial-gradient(ellipse 50% 30% at 0% 80%, rgba(147, 112, 219, 0.08) 0%, transparent 50%);
+            background:
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(106, 90, 205, 0.2) 0%, transparent 50%),
+                radial-gradient(ellipse 60% 40% at 100% 100%, rgba(157, 140, 255, 0.12) 0%, transparent 50%),
+                radial-gradient(ellipse 50% 30% at 0% 80%, rgba(184, 176, 232, 0.1) 0%, transparent 50%);
             pointer-events: none;
             z-index: 0;
         }
@@ -79,11 +94,12 @@
         }
 
         .header h1 {
-            font-family: 'Playfair Display', Georgia, serif;
+            font-family: var(--font-display);
             font-size: 1.1rem;
-            font-weight: 500;
-            letter-spacing: 0.1em;
-            color: var(--text-muted);
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            color: var(--text-primary);
+            text-transform: uppercase;
         }
 
         /* Phase Selector Button */
@@ -100,13 +116,13 @@
         }
 
         .phase-selector:active {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(106, 90, 205, 0.15);
         }
 
         .phase-selector .phase-name {
             font-size: 0.85rem;
             font-weight: 500;
-            color: var(--accent-rose);
+            color: var(--accent-light);
         }
 
         .phase-selector .phase-dots {
@@ -125,11 +141,11 @@
         .phase-selector .dot.active {
             width: 12px;
             border-radius: 6px;
-            background: var(--accent-rose);
+            background: var(--accent-primary);
         }
 
         .phase-selector .dot.completed {
-            background: var(--accent-rose);
+            background: var(--accent-primary);
             opacity: 0.5;
         }
 
@@ -161,8 +177,15 @@
         }
 
         @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-8px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .phase-menu-item {
@@ -176,11 +199,11 @@
         }
 
         .phase-menu-item:active {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(106, 90, 205, 0.15);
         }
 
         .phase-menu-item.active {
-            background: rgba(232, 164, 184, 0.15);
+            background: rgba(106, 90, 205, 0.2);
         }
 
         .phase-menu-item .phase-info {
@@ -207,7 +230,7 @@
 
         .phase-menu-divider {
             height: 1px;
-            background: var(--glass-border);
+            background: rgba(106, 90, 205, 0.15);
             margin: 8px 0;
         }
 
@@ -223,7 +246,7 @@
         }
 
         .phase-menu-action:active {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(106, 90, 205, 0.12);
         }
 
         .phase-menu-action svg {
@@ -247,14 +270,14 @@
         }
 
         .question-card {
-            background: linear-gradient(165deg, rgba(40, 30, 60, 0.95) 0%, rgba(25, 20, 45, 0.98) 100%);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: linear-gradient(165deg, rgba(30, 35, 65, 0.95) 0%, rgba(15, 18, 35, 0.98) 100%);
+            border: 1px solid rgba(106, 90, 205, 0.15);
             border-radius: 20px;
             padding: 20px;
             display: flex;
             flex-direction: column;
             position: relative;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 40px rgba(106, 90, 205, 0.15), 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
         .card-top-row {
@@ -275,13 +298,13 @@
         }
 
         .who-answers.birthday-person {
-            background: rgba(232, 164, 184, 0.2);
-            color: var(--accent-rose);
+            background: rgba(106, 90, 205, 0.2);
+            color: var(--accent-light);
         }
 
         .who-answers.partner {
-            background: rgba(147, 197, 253, 0.2);
-            color: #93c5fd;
+            background: rgba(157, 140, 255, 0.2);
+            color: var(--accent-glow);
         }
 
         .card-badges {
@@ -291,8 +314,8 @@
         }
 
         .wildcard-badge {
-            background: rgba(212, 165, 116, 0.25);
-            color: var(--accent-gold);
+            background: rgba(184, 176, 232, 0.25);
+            color: var(--accent-soft);
             font-size: 0.6rem;
             font-weight: 600;
             letter-spacing: 0.05em;
@@ -321,8 +344,8 @@
         }
 
         .bookmark-indicator.bookmarked svg {
-            stroke: var(--accent-gold);
-            fill: var(--accent-gold);
+            stroke: var(--accent-warm);
+            fill: var(--accent-warm);
         }
 
         .bookmark-indicator:active {
@@ -330,11 +353,12 @@
         }
 
         .question-text {
-            font-family: 'Playfair Display', Georgia, serif;
-            font-size: 1.25rem;
+            font-family: var(--font-body-serif);
+            font-size: 1.2rem;
             font-weight: 400;
             text-align: center;
-            line-height: 1.5;
+            line-height: 1.6;
+            letter-spacing: 0.01em;
             color: var(--text-primary);
             flex: 1;
             display: flex;
@@ -362,7 +386,7 @@
             padding: 16px;
             border: none;
             border-radius: 12px;
-            font-family: 'Inter', sans-serif;
+            font-family: var(--font-ui);
             font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
@@ -371,14 +395,23 @@
         }
 
         .btn-next {
-            background: linear-gradient(135deg, var(--accent-rose) 0%, var(--accent-gold) 100%);
-            color: var(--bg-primary);
+            background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-glow) 100%);
+            color: #ffffff;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-next:hover {
+            box-shadow: 0 4px 20px rgba(106, 90, 205, 0.4);
         }
 
         .btn-skip {
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
             color: var(--text-secondary);
+        }
+
+        .btn-skip:hover {
+            background: rgba(106, 90, 205, 0.12);
         }
 
         .actions button:active {
@@ -394,7 +427,7 @@
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(10, 5, 20, 0.9);
+            background: rgba(10, 14, 26, 0.92);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
             display: none;
@@ -411,13 +444,18 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         .modal {
-            background: linear-gradient(180deg, rgba(30, 25, 50, 0.98) 0%, rgba(20, 15, 35, 0.99) 100%);
-            border: 1px solid var(--glass-border);
+            background: linear-gradient(180deg, rgba(25, 30, 55, 0.98) 0%, rgba(15, 18, 35, 0.99) 100%);
+            border: 1px solid rgba(106, 90, 205, 0.2);
             border-radius: 24px 24px 24px 24px;
             width: 100%;
             max-width: 420px;
@@ -425,21 +463,28 @@
             overflow-y: auto;
             padding: 28px 24px;
             animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 -10px 50px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 -10px 50px rgba(106, 90, 205, 0.1), 0 -5px 30px rgba(0, 0, 0, 0.4);
         }
 
         @keyframes slideUp {
-            from { opacity: 0; transform: translateY(40px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .modal h2 {
-            font-family: 'Playfair Display', Georgia, serif;
+            font-family: var(--font-display);
             font-size: 1.5rem;
             font-weight: 500;
             margin-bottom: 24px;
             text-align: center;
-            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-rose) 100%);
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-light) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -461,10 +506,10 @@
         }
 
         .stat-value {
-            font-family: 'Playfair Display', Georgia, serif;
+            font-family: var(--font-display);
             font-size: 2.2rem;
             font-weight: 500;
-            background: linear-gradient(135deg, var(--accent-rose) 0%, var(--accent-gold) 100%);
+            background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-glow) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -483,7 +528,7 @@
         }
 
         .phase-breakdown h3 {
-            font-family: 'Playfair Display', Georgia, serif;
+            font-family: var(--font-display);
             font-size: 1rem;
             font-weight: 500;
             margin-bottom: 14px;
@@ -495,7 +540,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 12px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            border-bottom: 1px solid rgba(106, 90, 205, 0.1);
         }
 
         .phase-row:last-child {
@@ -508,13 +553,13 @@
         }
 
         .phase-row span:last-child {
-            color: var(--accent-rose);
+            color: var(--accent-light);
             font-weight: 500;
             font-size: 0.9rem;
         }
 
         .bookmarks-section h3 {
-            font-family: 'Playfair Display', Georgia, serif;
+            font-family: var(--font-display);
             font-size: 1rem;
             font-weight: 500;
             margin-bottom: 14px;
@@ -530,10 +575,10 @@
         }
 
         .bookmark-item p:first-child {
-            font-family: 'Playfair Display', Georgia, serif;
+            font-family: var(--font-body-serif);
             font-size: 0.95rem;
             color: var(--text-primary);
-            line-height: 1.5;
+            line-height: 1.55;
         }
 
         .bookmark-item .phase-tag {
@@ -562,7 +607,7 @@
             padding: 16px;
             border: none;
             border-radius: 12px;
-            font-family: 'Inter', sans-serif;
+            font-family: var(--font-ui);
             font-size: 0.9rem;
             font-weight: 500;
             cursor: pointer;
@@ -587,7 +632,7 @@
         }
 
         .btn-close:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(106, 90, 205, 0.15);
         }
 
         /* Responsive */
@@ -598,13 +643,18 @@
             }
 
             .question-text {
-                font-size: 1.15rem;
+                font-size: 1.1rem;
+                line-height: 1.65;
+            }
+
+            .header h1 {
+                font-size: 1rem;
             }
         }
 
         @media (min-height: 700px) {
             .question-text {
-                font-size: 1.35rem;
+                font-size: 1.3rem;
             }
         }
 
@@ -618,16 +668,21 @@
         }
 
         .modal::-webkit-scrollbar-thumb {
-            background: var(--glass-border);
+            background: rgba(106, 90, 205, 0.3);
             border-radius: 4px;
+        }
+
+        .modal::-webkit-scrollbar-thumb:hover {
+            background: rgba(106, 90, 205, 0.5);
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header-bar">
             <header class="header">
-                <h1>CURRENTS</h1>
+                <h1>Currents</h1>
             </header>
             <div class="phase-selector" id="phaseSelector" onclick="togglePhaseMenu()">
                 <span class="phase-name" id="phaseName">Warm Up</span>
@@ -639,7 +694,9 @@
                     <div class="dot"></div>
                     <div class="dot"></div>
                 </div>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 9l6 6 6-6" />
+                </svg>
             </div>
         </div>
 
@@ -688,11 +745,17 @@
             </div>
             <div class="phase-menu-divider"></div>
             <div class="phase-menu-action" onclick="showSummary()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
                 Summary
             </div>
             <div class="phase-menu-action danger" onclick="resetSession()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
                 Reset Session
             </div>
         </div>
@@ -704,7 +767,10 @@
                     <div class="card-badges">
                         <span class="wildcard-badge" id="wildcardBadge" style="display: none;">Wildcard</span>
                         <span class="bookmark-indicator" id="bookmarkBtn" onclick="toggleBookmark()">
-                            <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                            <svg viewBox="0 0 24 24">
+                                <path
+                                    d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                            </svg>
                         </span>
                     </div>
                 </div>
@@ -723,7 +789,7 @@
     <div class="modal-overlay" id="summaryModal">
         <div class="modal">
             <h2>Session Summary</h2>
-            
+
             <div class="summary-stats">
                 <div class="stat-item">
                     <div class="stat-value" id="totalAnswered">0</div>
@@ -962,9 +1028,9 @@
 
         // Get available questions for current phase
         function getAvailableQuestions(phase) {
-            return QUESTIONS.filter(q => 
-                q.phase === phase && 
-                !state.seen.includes(q.id) && 
+            return QUESTIONS.filter(q =>
+                q.phase === phase &&
+                !state.seen.includes(q.id) &&
                 !state.skipped.includes(q.id)
             );
         }
@@ -976,8 +1042,8 @@
 
             // Wildcard mode: 1 in 10 chance of any phase
             if (state.wildcardMode && Math.random() < 0.1) {
-                pool = QUESTIONS.filter(q => 
-                    !state.seen.includes(q.id) && 
+                pool = QUESTIONS.filter(q =>
+                    !state.seen.includes(q.id) &&
                     !state.skipped.includes(q.id)
                 );
                 if (pool.length > 0) {
@@ -1018,7 +1084,7 @@
 
             state.currentQuestionId = question.id;
             textEl.textContent = question.text;
-            
+
             // Who answers indicator
             whoEl.style.display = 'block';
             if (question.answeredBy === 'birthday_person') {
@@ -1058,7 +1124,7 @@
 
             // Update phase dots in selector
             updatePhaseDots();
-            
+
             // Update phase menu active state
             updatePhaseMenu();
         }
@@ -1116,16 +1182,16 @@
             if (state.currentQuestionId !== null) {
                 if (!state.seen.includes(state.currentQuestionId)) {
                     state.seen.push(state.currentQuestionId);
-                    
+
                     // Track by phase
                     const question = QUESTIONS.find(q => q.id === state.currentQuestionId);
                     if (question) {
-                        state.answeredByPhase[question.phase] = 
+                        state.answeredByPhase[question.phase] =
                             (state.answeredByPhase[question.phase] || 0) + 1;
                     }
                 }
             }
-            
+
             updatePhaseUI();
             displayQuestion(getRandomQuestion());
             saveState();
@@ -1148,7 +1214,7 @@
 
             const idx = state.bookmarked.indexOf(state.currentQuestionId);
             const bookmarkBtn = document.getElementById('bookmarkBtn');
-            
+
             if (idx === -1) {
                 state.bookmarked.push(state.currentQuestionId);
                 bookmarkBtn.classList.add('bookmarked');
@@ -1163,7 +1229,7 @@
         function showSummary() {
             closePhaseMenu();
             const modal = document.getElementById('summaryModal');
-            
+
             // Calculate totals
             const totalAnswered = state.seen.length;
             const totalBookmarked = state.bookmarked.length;
@@ -1238,14 +1304,14 @@
         document.getElementById('skipBtn').addEventListener('click', skipQuestion);
 
         // Close modal on overlay click
-        document.getElementById('summaryModal').addEventListener('click', function(e) {
+        document.getElementById('summaryModal').addEventListener('click', function (e) {
             if (e.target === this) {
                 closeSummary();
             }
         });
 
         // Close phase menu when clicking outside
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', function (e) {
             const menu = document.getElementById('phaseMenu');
             const selector = document.getElementById('phaseSelector');
             if (!menu.contains(e.target) && !selector.contains(e.target)) {
@@ -1257,7 +1323,7 @@
         function init() {
             loadState();
             updatePhaseUI();
-            
+
             // If we have a current question, try to display it
             if (state.currentQuestionId) {
                 const currentQ = QUESTIONS.find(q => q.id === state.currentQuestionId);
@@ -1274,5 +1340,231 @@
         // Start the app
         init();
     </script>
+    <canvas id="currents-canvas"></canvas>
+
+    <style>
+        /* 1. Canvas Layer */
+        #currents-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            /* Sits behind the container */
+            opacity: 0.6;
+            mix-blend-mode: screen;
+            /* Blends luminously with the dark background */
+            transition: opacity 1s ease;
+        }
+
+        /* 2. Card Animation States */
+        .question-card {
+            /* Optimize for smooth motion */
+            will-change: transform, opacity, filter;
+            transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            transform: translateY(0) scale(1);
+            opacity: 1;
+            filter: blur(0);
+            backface-visibility: hidden;
+        }
+
+        /* State: Being washed away by the current */
+        .question-card.exiting {
+            transform: translateY(-40px) scale(0.95);
+            opacity: 0;
+            filter: blur(8px);
+            transition-duration: 0.3s;
+            /* Exit faster than enter */
+        }
+
+        /* State: Preparing to enter from below */
+        .question-card.entering {
+            transform: translateY(40px) scale(0.95);
+            opacity: 0;
+            filter: blur(8px);
+            transition: none;
+            /* Instant snap to starting position */
+        }
+    </style>
+
+    <script>
+        (function () {
+            /**
+             * CONFIGURATION
+             * Matches the app's "Deep Ocean" aesthetic
+             */
+            const CONFIG = {
+                particleCount: window.innerWidth < 600 ? 50 : 100, // Optimized for mobile
+                baseSpeed: 0.4,       // Idle drift speed
+                surgeSpeed: 12.0,     // Speed during "Next" transition
+                colors: [
+                    { r: 106, g: 90, b: 205 },  // --accent-primary
+                    { r: 157, g: 140, b: 255 }, // --accent-glow
+                    { r: 139, g: 127, b: 212 }, // --accent-light
+                    { r: 201, g: 181, b: 227 }  // --accent-warm
+                ]
+            };
+
+            /* --- PART 1: THE PARTICLE ENGINE --- */
+            const canvas = document.getElementById('currents-canvas');
+            const ctx = canvas.getContext('2d', { alpha: true });
+
+            let width, height;
+            let particles = [];
+            let surgeFactor = 0; // 0 = calm, 1 = max surge
+            let targetSurge = 0;
+
+            // Helper: Random generator
+            const random = (min, max) => Math.random() * (max - min) + min;
+
+            class Particle {
+                constructor() {
+                    this.init(true);
+                }
+
+                init(randomY = false) {
+                    this.x = Math.random() * width;
+                    // randomY=true scatters them on load. False spawns them at bottom for looping.
+                    this.y = randomY ? Math.random() * height : height + 50;
+
+                    this.size = random(0.5, 3.0);
+                    this.baseAlpha = random(0.1, 0.5);
+                    this.speedMod = random(0.8, 1.2);
+                    this.color = CONFIG.colors[Math.floor(Math.random() * CONFIG.colors.length)];
+
+                    // Organic drift (sine wave properties)
+                    this.angle = Math.random() * Math.PI * 2;
+                    this.angleSpeed = random(0.01, 0.03) * (Math.random() < 0.5 ? 1 : -1);
+                }
+
+                update() {
+                    // Physics: Smoothly interpolate speed based on surgeFactor
+                    // This creates the "acceleration" effect
+                    const currentSpeed = (CONFIG.baseSpeed + (CONFIG.surgeSpeed * surgeFactor)) * this.speedMod;
+
+                    this.y -= currentSpeed;
+
+                    // Drift logic: Reduce horizontal drift when surging (visual focus)
+                    const driftIntensity = 1 - Math.min(surgeFactor, 0.8);
+                    this.angle += this.angleSpeed;
+                    this.x += Math.cos(this.angle) * driftIntensity * 0.5;
+
+                    // Loop: If off top of screen, respawn at bottom
+                    if (this.y < -50) this.init(false);
+                }
+
+                draw() {
+                    // Visual FX: Stretch particles vertically when moving fast ("Warp Speed")
+                    const stretch = 1 + (surgeFactor * 3);
+
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    ctx.scale(1, stretch);
+
+                    ctx.beginPath();
+                    // Increase opacity slightly during surge for "energy"
+                    const alpha = Math.min(1, this.baseAlpha + (surgeFactor * 0.3));
+                    ctx.fillStyle = `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, ${alpha})`;
+                    ctx.arc(0, 0, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.restore();
+                }
+            }
+
+            function resize() {
+                width = window.innerWidth;
+                height = window.innerHeight;
+                // High-DPI support for crisp text/particles
+                const dpr = window.devicePixelRatio || 1;
+                canvas.width = width * dpr;
+                canvas.height = height * dpr;
+                ctx.scale(dpr, dpr);
+                canvas.style.width = `${width}px`;
+                canvas.style.height = `${height}px`;
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+
+                // Additive blending makes particles glow when they overlap
+                ctx.globalCompositeOperation = 'lighter';
+
+                // Physics: Surge Decay (Spring physics)
+                // If target is 1 (active), approach fast. If 0 (relaxing), decay slowly.
+                const approachSpeed = targetSurge > surgeFactor ? 0.1 : 0.04;
+                surgeFactor += (targetSurge - surgeFactor) * approachSpeed;
+
+                particles.forEach(p => {
+                    p.update();
+                    p.draw();
+                });
+
+                // Reset blend mode
+                ctx.globalCompositeOperation = 'source-over';
+                requestAnimationFrame(animate);
+            }
+
+            // Initialize System
+            window.addEventListener('resize', resize);
+            resize();
+            for (let i = 0; i < CONFIG.particleCount; i++) particles.push(new Particle());
+            animate();
+
+
+            /* --- PART 2: UI INTERACTION HOOK --- */
+
+            // We replace the button elements to intercept the click events safely.
+            // This allows us to play the exit animation BEFORE the text updates.
+
+            function upgradeButton(btnId, originalAction) {
+                const oldBtn = document.getElementById(btnId);
+                if (!oldBtn) return;
+
+                // Clone to strip existing listeners
+                const newBtn = oldBtn.cloneNode(true);
+                oldBtn.parentNode.replaceChild(newBtn, oldBtn);
+
+                newBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+
+                    // 1. Trigger Visual Surge
+                    targetSurge = 1;
+                    setTimeout(() => { targetSurge = 0; }, 300); // Surge duration
+
+                    // 2. Animate Card Out
+                    const card = document.getElementById('questionCard');
+                    card.classList.add('exiting');
+
+                    // 3. Wait for exit, then update data
+                    setTimeout(() => {
+                        // Call the original app logic (nextQuestion or skipQuestion)
+                        if (typeof window[originalAction] === 'function') {
+                            window[originalAction]();
+                        }
+
+                        // 4. Animate Card In
+                        card.classList.remove('exiting');
+                        card.classList.add('entering');
+
+                        // Force browser reflow to register the 'entering' state before clearing it
+                        void card.offsetWidth;
+
+                        // Trigger the transition back to normal
+                        card.classList.remove('entering');
+
+                    }, 300); // Matches CSS transition time
+                });
+            }
+
+            // Apply hooks to existing buttons
+            upgradeButton('nextBtn', 'nextQuestion');
+            upgradeButton('skipBtn', 'skipQuestion');
+
+        })();
+    </script>
 </body>
+
 </html>
