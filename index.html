@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0f0a1e">
+    <title>Currents - Birthday Edition</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap');
+
+        :root {
+            --bg-primary: #0f0a1e;
+            --bg-secondary: #1a1233;
+            --accent-rose: #e8a4b8;
+            --accent-gold: #d4a574;
+            --accent-warm: #c9a87c;
+            --text-primary: #f5f0eb;
+            --text-secondary: rgba(245, 240, 235, 0.7);
+            --text-muted: rgba(245, 240, 235, 0.5);
+            --glass-bg: rgba(255, 255, 255, 0.06);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --card-glow: rgba(232, 164, 184, 0.15);
+            --safe-top: env(safe-area-inset-top);
+            --safe-bottom: env(safe-area-inset-bottom);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: 
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(232, 164, 184, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse 60% 40% at 100% 100%, rgba(212, 165, 116, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse 50% 30% at 0% 80%, rgba(147, 112, 219, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 440px;
+            margin: 0 auto;
+            padding: calc(16px + var(--safe-top)) 20px calc(16px + var(--safe-bottom));
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Compact Header Bar */
+        .header-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 0 12px;
+            flex-shrink: 0;
+        }
+
+        .header h1 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.1rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+        }
+
+        /* Phase Selector Button */
+        .phase-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 14px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .phase-selector:active {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .phase-selector .phase-name {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--accent-rose);
+        }
+
+        .phase-selector .phase-dots {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .phase-selector .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .phase-selector .dot.active {
+            width: 12px;
+            border-radius: 6px;
+            background: var(--accent-rose);
+        }
+
+        .phase-selector .dot.completed {
+            background: var(--accent-rose);
+            opacity: 0.5;
+        }
+
+        .phase-selector svg {
+            width: 14px;
+            height: 14px;
+            color: var(--text-muted);
+            transition: transform 0.2s ease;
+        }
+
+        .phase-selector.open svg {
+            transform: rotate(180deg);
+        }
+
+        /* Phase Menu Dropdown */
+        .phase-menu {
+            display: none;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 8px;
+            margin-bottom: 10px;
+            flex-shrink: 0;
+        }
+
+        .phase-menu.open {
+            display: block;
+            animation: slideDown 0.2s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .phase-menu-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+
+        .phase-menu-item:active {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .phase-menu-item.active {
+            background: rgba(232, 164, 184, 0.15);
+        }
+
+        .phase-menu-item .phase-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .phase-menu-item .phase-title {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .phase-menu-item .phase-desc {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .phase-menu-item .phase-num {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .phase-menu-divider {
+            height: 1px;
+            background: var(--glass-border);
+            margin: 8px 0;
+        }
+
+        .phase-menu-action {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .phase-menu-action:active {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .phase-menu-action svg {
+            width: 16px;
+            height: 16px;
+            opacity: 0.7;
+        }
+
+        .phase-menu-action.danger {
+            color: #f87171;
+        }
+
+        /* Card Area */
+        .card-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .question-card {
+            background: linear-gradient(165deg, rgba(40, 30, 60, 0.95) 0%, rgba(25, 20, 45, 0.98) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-shrink: 0;
+        }
+
+        .who-answers {
+            font-size: 0.65rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            padding: 5px 10px;
+            border-radius: 16px;
+            text-transform: uppercase;
+        }
+
+        .who-answers.birthday-person {
+            background: rgba(232, 164, 184, 0.2);
+            color: var(--accent-rose);
+        }
+
+        .who-answers.partner {
+            background: rgba(147, 197, 253, 0.2);
+            color: #93c5fd;
+        }
+
+        .card-badges {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .wildcard-badge {
+            background: rgba(212, 165, 116, 0.25);
+            color: var(--accent-gold);
+            font-size: 0.6rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            padding: 4px 8px;
+            border-radius: 10px;
+            text-transform: uppercase;
+        }
+
+        .bookmark-indicator {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin: -8px;
+        }
+
+        .bookmark-indicator svg {
+            width: 20px;
+            height: 20px;
+            stroke: var(--text-muted);
+            fill: none;
+            stroke-width: 1.5;
+            transition: all 0.2s ease;
+        }
+
+        .bookmark-indicator.bookmarked svg {
+            stroke: var(--accent-gold);
+            fill: var(--accent-gold);
+        }
+
+        .bookmark-indicator:active {
+            transform: scale(0.9);
+        }
+
+        .question-text {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.25rem;
+            font-weight: 400;
+            text-align: center;
+            line-height: 1.5;
+            color: var(--text-primary);
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 0;
+        }
+
+        .no-questions {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Actions */
+        .actions {
+            display: flex;
+            gap: 10px;
+            padding-top: 12px;
+            flex-shrink: 0;
+        }
+
+        .actions button {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-height: 52px;
+        }
+
+        .btn-next {
+            background: linear-gradient(135deg, var(--accent-rose) 0%, var(--accent-gold) 100%);
+            color: var(--bg-primary);
+        }
+
+        .btn-skip {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+        }
+
+        .actions button:active {
+            transform: scale(0.98);
+        }
+
+        .actions button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 5, 20, 0.9);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: flex-end;
+            z-index: 100;
+            padding: 20px;
+            padding-bottom: calc(20px + var(--safe-bottom));
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal {
+            background: linear-gradient(180deg, rgba(30, 25, 50, 0.98) 0%, rgba(20, 15, 35, 0.99) 100%);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px 24px 24px 24px;
+            width: 100%;
+            max-width: 420px;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 28px 24px;
+            animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 -10px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal h2 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin-bottom: 24px;
+            text-align: center;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-rose) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+
+        .stat-item {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 18px 16px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 2.2rem;
+            font-weight: 500;
+            background: linear-gradient(135deg, var(--accent-rose) 0%, var(--accent-gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .phase-breakdown {
+            margin-bottom: 28px;
+        }
+
+        .phase-breakdown h3 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 14px;
+            color: var(--text-secondary);
+        }
+
+        .phase-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .phase-row:last-child {
+            border-bottom: none;
+        }
+
+        .phase-row span:first-child {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .phase-row span:last-child {
+            color: var(--accent-rose);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .bookmarks-section h3 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 14px;
+            color: var(--text-secondary);
+        }
+
+        .bookmark-item {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 16px;
+            border-radius: 14px;
+            margin-bottom: 10px;
+        }
+
+        .bookmark-item p:first-child {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+
+        .bookmark-item .phase-tag {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .no-bookmarks {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 24px;
+            font-size: 0.9rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        .modal-actions button {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-height: 52px;
+        }
+
+        .btn-reset {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-reset:hover {
+            background: rgba(239, 68, 68, 0.25);
+        }
+
+        .btn-close {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+        }
+
+        .btn-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Responsive */
+        @media (max-width: 380px) {
+            .container {
+                padding-left: 14px;
+                padding-right: 14px;
+            }
+
+            .question-text {
+                font-size: 1.15rem;
+            }
+        }
+
+        @media (min-height: 700px) {
+            .question-text {
+                font-size: 1.35rem;
+            }
+        }
+
+        /* Smooth scroll for modal */
+        .modal::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .modal::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .modal::-webkit-scrollbar-thumb {
+            background: var(--glass-border);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-bar">
+            <header class="header">
+                <h1>CURRENTS</h1>
+            </header>
+            <div class="phase-selector" id="phaseSelector" onclick="togglePhaseMenu()">
+                <span class="phase-name" id="phaseName">Warm Up</span>
+                <div class="phase-dots" id="phaseDots">
+                    <div class="dot active"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                </div>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+        </div>
+
+        <div class="phase-menu" id="phaseMenu">
+            <div class="phase-menu-item" data-phase="1" onclick="selectPhase(1)">
+                <div class="phase-info">
+                    <span class="phase-title">Warm Up</span>
+                    <span class="phase-desc">Light, nostalgic, playful</span>
+                </div>
+                <span class="phase-num">1</span>
+            </div>
+            <div class="phase-menu-item" data-phase="2" onclick="selectPhase(2)">
+                <div class="phase-info">
+                    <span class="phase-title">Her Story</span>
+                    <span class="phase-desc">Reflective, celebratory</span>
+                </div>
+                <span class="phase-num">2</span>
+            </div>
+            <div class="phase-menu-item" data-phase="3" onclick="selectPhase(3)">
+                <div class="phase-info">
+                    <span class="phase-title">Us</span>
+                    <span class="phase-desc">Intimate, connecting</span>
+                </div>
+                <span class="phase-num">3</span>
+            </div>
+            <div class="phase-menu-item" data-phase="4" onclick="selectPhase(4)">
+                <div class="phase-info">
+                    <span class="phase-title">Deep Dive</span>
+                    <span class="phase-desc">Vulnerable, meaningful</span>
+                </div>
+                <span class="phase-num">4</span>
+            </div>
+            <div class="phase-menu-item" data-phase="5" onclick="selectPhase(5)">
+                <div class="phase-info">
+                    <span class="phase-title">Looking Forward</span>
+                    <span class="phase-desc">Hopeful, energizing</span>
+                </div>
+                <span class="phase-num">5</span>
+            </div>
+            <div class="phase-menu-item" data-phase="6" onclick="selectPhase(6)">
+                <div class="phase-info">
+                    <span class="phase-title">Cool Down</span>
+                    <span class="phase-desc">Light, fun, easy</span>
+                </div>
+                <span class="phase-num">6</span>
+            </div>
+            <div class="phase-menu-divider"></div>
+            <div class="phase-menu-action" onclick="showSummary()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                Summary
+            </div>
+            <div class="phase-menu-action danger" onclick="resetSession()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                Reset Session
+            </div>
+        </div>
+
+        <div class="card-area">
+            <div class="question-card" id="questionCard">
+                <div class="card-top-row">
+                    <span class="who-answers birthday-person" id="whoAnswers">She answers</span>
+                    <div class="card-badges">
+                        <span class="wildcard-badge" id="wildcardBadge" style="display: none;">Wildcard</span>
+                        <span class="bookmark-indicator" id="bookmarkBtn" onclick="toggleBookmark()">
+                            <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                        </span>
+                    </div>
+                </div>
+                <p class="question-text" id="questionText">Loading...</p>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button class="btn-skip" id="skipBtn">Skip</button>
+            <button class="btn-next" id="nextBtn">Next</button>
+        </div>
+
+    </div>
+
+    <!-- Summary Modal -->
+    <div class="modal-overlay" id="summaryModal">
+        <div class="modal">
+            <h2>Session Summary</h2>
+            
+            <div class="summary-stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalAnswered">0</div>
+                    <div class="stat-label">Answered</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="totalBookmarked">0</div>
+                    <div class="stat-label">Saved</div>
+                </div>
+            </div>
+
+            <div class="phase-breakdown">
+                <h3>By Phase</h3>
+                <div id="phaseBreakdown"></div>
+            </div>
+
+            <div class="bookmarks-section">
+                <h3>Saved Questions</h3>
+                <div id="bookmarksList"></div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-reset" onclick="resetSession()">New Session</button>
+                <button class="btn-close" onclick="closeSummary()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Phase definitions
+        const PHASES = [
+            { number: 1, name: "Warm Up", description: "Light, nostalgic, playful. Ease into conversation." },
+            { number: 2, name: "Her Story", description: "Reflective, celebratory. The birthday person's journey and growth." },
+            { number: 3, name: "Us", description: "Intimate, connecting. Relationship-focused; how partners see each other." },
+            { number: 4, name: "Deep Dive", description: "Vulnerable, meaningful. Heart-to-heart on fears, healing, legacy." },
+            { number: 5, name: "Looking Forward", description: "Hopeful, energizing. The year ahead, dreams, aspirations." },
+            { number: 6, name: "Cool Down", description: "Light, fun, easy. Wind down with playful questions." }
+        ];
+
+        // Questions
+        const QUESTIONS = [
+            // Phase 1: Warm Up (23 questions)
+            { id: 1, text: "What's your earliest birthday memory?", phase: 1, answeredBy: "birthday_person" },
+            { id: 2, text: "What was the best birthday you ever had as a child, and what made it special?", phase: 1, answeredBy: "birthday_person" },
+            { id: 3, text: "What's a birthday tradition from your childhood you'd love to bring back?", phase: 1, answeredBy: "birthday_person" },
+            { id: 4, text: "What's the most meaningful birthday gift you've ever received?", phase: 1, answeredBy: "birthday_person" },
+            { id: 5, text: "What's a birthday wish you made as a kid that actually came true?", phase: 1, answeredBy: "birthday_person" },
+            { id: 6, text: "What was the worst birthday you ever had, and what do you remember most about it?", phase: 1, answeredBy: "birthday_person" },
+            { id: 7, text: "What's the most unexpected birthday surprise you've ever gotten?", phase: 1, answeredBy: "birthday_person" },
+            { id: 8, text: "If you could relive any birthday, which one would you choose and why?", phase: 1, answeredBy: "birthday_person" },
+            { id: 9, text: "What's a birthday party disaster from your past that's funny now?", phase: 1, answeredBy: "birthday_person" },
+            { id: 10, text: "If you had to describe yourself using only three emojis, what would they be?", phase: 1, answeredBy: "birthday_person" },
+            { id: 11, text: "What's the most embarrassing song you know all the words to?", phase: 1, answeredBy: "birthday_person" },
+            { id: 12, text: "What's a guilty pleasure you've never fully admitted to?", phase: 1, answeredBy: "birthday_person" },
+            { id: 13, text: "If you could have dinner with any three people—living or dead—who would you invite?", phase: 1, answeredBy: "birthday_person" },
+            { id: 14, text: "If your life was a movie, what would the title be?", phase: 1, answeredBy: "birthday_person" },
+            { id: 15, text: "If you could wake up tomorrow with one new skill fully mastered, what would it be?", phase: 1, answeredBy: "birthday_person" },
+            { id: 16, text: "What's your most irrational fear?", phase: 1, answeredBy: "birthday_person" },
+            { id: 17, text: "What's a hill you're willing to die on that most people would find ridiculous?", phase: 1, answeredBy: "birthday_person" },
+            { id: 18, text: "What's your unpopular opinion that you'll defend forever?", phase: 1, answeredBy: "birthday_person" },
+            { id: 19, text: "What's the most \"you\" purchase you've ever made?", phase: 1, answeredBy: "birthday_person" },
+            { id: 20, text: "If you could live in any era, when would you choose?", phase: 1, answeredBy: "birthday_person" },
+            { id: 21, text: "What's something your kids do that makes you laugh every time?", phase: 1, answeredBy: "birthday_person" },
+            { id: 22, text: "What's a story about us that you love telling other people?", phase: 1, answeredBy: "birthday_person" },
+            { id: 23, text: "What's a simple pleasure that brings you joy every time?", phase: 1, answeredBy: "birthday_person" },
+
+            // Phase 2: Her Story (31 questions)
+            { id: 24, text: "What's something you've learned about yourself this past year that surprised you?", phase: 2, answeredBy: "birthday_person" },
+            { id: 25, text: "What accomplishment from the past year are you most proud of—even if no one else noticed?", phase: 2, answeredBy: "birthday_person" },
+            { id: 26, text: "In what ways have you grown the most since your last birthday?", phase: 2, answeredBy: "birthday_person" },
+            { id: 27, text: "What's a fear you faced this year that you're proud of confronting?", phase: 2, answeredBy: "birthday_person" },
+            { id: 28, text: "What's something you do now that your younger self would be amazed by?", phase: 2, answeredBy: "birthday_person" },
+            { id: 29, text: "What's the bravest thing you did this past year?", phase: 2, answeredBy: "birthday_person" },
+            { id: 30, text: "What's a small daily habit that has quietly changed your life?", phase: 2, answeredBy: "birthday_person" },
+            { id: 31, text: "If your 20-year-old self could see you now, what would she think?", phase: 2, answeredBy: "birthday_person" },
+            { id: 32, text: "What's something you've stopped apologizing for?", phase: 2, answeredBy: "birthday_person" },
+            { id: 33, text: "What have you outgrown this year—and how did it feel to let it go?", phase: 2, answeredBy: "birthday_person" },
+            { id: 34, text: "What did birthdays mean to you growing up, and how has that changed?", phase: 2, answeredBy: "birthday_person" },
+            { id: 35, text: "What's a moment of motherhood this year that you'll never forget?", phase: 2, answeredBy: "birthday_person" },
+            { id: 36, text: "What have your children taught you about yourself?", phase: 2, answeredBy: "birthday_person" },
+            { id: 37, text: "What surprised you most about becoming a mother?", phase: 2, answeredBy: "birthday_person" },
+            { id: 38, text: "What's a quality in your kids that you see as a reflection of yourself?", phase: 2, answeredBy: "birthday_person" },
+            { id: 39, text: "What kind of mother did you think you'd be vs. the mother you've become?", phase: 2, answeredBy: "birthday_person" },
+            { id: 40, text: "What's something you've let go of as a mom that brought you peace?", phase: 2, answeredBy: "birthday_person" },
+            { id: 41, text: "How has motherhood changed who you are in ways you didn't expect?", phase: 2, answeredBy: "birthday_person" },
+            { id: 42, text: "What's a compliment you received years ago that you still think about?", phase: 2, answeredBy: "birthday_person" },
+            { id: 43, text: "Who outside our family has had the biggest positive impact on your life?", phase: 2, answeredBy: "birthday_person" },
+            { id: 44, text: "What's something you're grateful for that took you a long time to appreciate?", phase: 2, answeredBy: "birthday_person" },
+            { id: 45, text: "What part of your daily routine brings you the most peace?", phase: 2, answeredBy: "birthday_person" },
+            { id: 46, text: "What was the highlight of your past year?", phase: 2, answeredBy: "birthday_person" },
+            { id: 47, text: "What was the most unexpected thing that happened this year?", phase: 2, answeredBy: "birthday_person" },
+            { id: 48, text: "What was a moment this year when you felt truly alive?", phase: 2, answeredBy: "birthday_person" },
+            { id: 49, text: "What lesson from this past year do you want to carry forward?", phase: 2, answeredBy: "birthday_person" },
+            { id: 50, text: "What was a turning point in your past year?", phase: 2, answeredBy: "birthday_person" },
+            { id: 51, text: "What's something you started this year that you're proud of continuing?", phase: 2, answeredBy: "birthday_person" },
+            { id: 52, text: "What's something you said \"no\" to this year that was good for you?", phase: 2, answeredBy: "birthday_person" },
+            { id: 53, text: "What brought you the most peace this past year?", phase: 2, answeredBy: "birthday_person" },
+            { id: 54, text: "What will you remember most about this year of your life?", phase: 2, answeredBy: "birthday_person" },
+
+            // Phase 3: Us (24 questions)
+            { id: 55, text: "What's a birthday we've spent together that stands out in your memory?", phase: 3, answeredBy: "partner" },
+            { id: 56, text: "What's something I've watched you master this year that fills me with pride?", phase: 3, answeredBy: "partner" },
+            { id: 57, text: "What's a quality in you that I've come to appreciate even more over time?", phase: 3, answeredBy: "partner" },
+            { id: 58, text: "What's something you do that you probably don't realize makes my day better?", phase: 3, answeredBy: "partner" },
+            { id: 59, text: "What moment this past year made me fall in love with you all over again?", phase: 3, answeredBy: "partner" },
+            { id: 60, text: "What's something about the way you handle hard things that inspires me?", phase: 3, answeredBy: "partner" },
+            { id: 61, text: "What's a small thing you do that I find absolutely adorable?", phase: 3, answeredBy: "partner" },
+            { id: 62, text: "What's something I wish you could see in yourself the way I see it?", phase: 3, answeredBy: "partner" },
+            { id: 63, text: "How have I seen you change since we first met, and what do I love about that change?", phase: 3, answeredBy: "partner" },
+            { id: 64, text: "What's something you've taught me without even trying?", phase: 3, answeredBy: "partner" },
+            { id: 65, text: "What part of your personality did I not fully appreciate at first but now treasure?", phase: 3, answeredBy: "partner" },
+            { id: 66, text: "When do I find myself thinking \"that's so her\"?", phase: 3, answeredBy: "partner" },
+            { id: 67, text: "What strength have I watched you develop that wasn't there when we met?", phase: 3, answeredBy: "partner" },
+            { id: 68, text: "What moment this year made me think \"she's such a good mom\"?", phase: 3, answeredBy: "partner" },
+            { id: 69, text: "What's a moment from our relationship that you replay in your mind when you need comfort?", phase: 3, answeredBy: "birthday_person" },
+            { id: 70, text: "What's something we used to do together that you'd love to bring back?", phase: 3, answeredBy: "birthday_person" },
+            { id: 71, text: "When do you feel most seen by me?", phase: 3, answeredBy: "birthday_person" },
+            { id: 72, text: "What's a way I've supported you that meant more than I probably realized?", phase: 3, answeredBy: "birthday_person" },
+            { id: 73, text: "What's a challenge we faced together that you're grateful for now?", phase: 3, answeredBy: "birthday_person" },
+            { id: 74, text: "What part of our relationship are you most proud of?", phase: 3, answeredBy: "birthday_person" },
+            { id: 75, text: "What's something I do that makes you feel safe?", phase: 3, answeredBy: "birthday_person" },
+            { id: 76, text: "When did you first feel like we were truly a team?", phase: 3, answeredBy: "birthday_person" },
+            { id: 77, text: "How have we grown together this past year?", phase: 3, answeredBy: "birthday_person" },
+            { id: 78, text: "What's your favorite ordinary moment we share?", phase: 3, answeredBy: "birthday_person" },
+
+            // Phase 4: Deep Dive (33 questions)
+            { id: 79, text: "What's a belief you held five years ago that has completely changed?", phase: 4, answeredBy: "birthday_person" },
+            { id: 80, text: "What part of yourself have you learned to accept that you once struggled with?", phase: 4, answeredBy: "birthday_person" },
+            { id: 81, text: "What's the hardest part of motherhood that no one warned you about?", phase: 4, answeredBy: "birthday_person" },
+            { id: 82, text: "What do you hope your children remember most about their childhood?", phase: 4, answeredBy: "birthday_person" },
+            { id: 83, text: "What do you want your children to know about you when they're adults?", phase: 4, answeredBy: "birthday_person" },
+            { id: 84, text: "How has being a mother changed the way you see your own parents?", phase: 4, answeredBy: "birthday_person" },
+            { id: 85, text: "What's a parenting moment you initially felt was a failure but now see differently?", phase: 4, answeredBy: "birthday_person" },
+            { id: 86, text: "What's something you've never told me about how you experienced our early relationship?", phase: 4, answeredBy: "birthday_person" },
+            { id: 87, text: "What's something about \"us\" that you want to protect?", phase: 4, answeredBy: "birthday_person" },
+            { id: 88, text: "What made you cry this year—happy or sad tears?", phase: 4, answeredBy: "birthday_person" },
+            { id: 89, text: "What's a struggle from your past that you're now genuinely grateful for?", phase: 4, answeredBy: "birthday_person" },
+            { id: 90, text: "If you could go back and give your 18-year-old self one piece of advice, what would it be?", phase: 4, answeredBy: "birthday_person" },
+            { id: 91, text: "If you could have a conversation with any version of yourself, what age would you choose and why?", phase: 4, answeredBy: "birthday_person" },
+            { id: 92, text: "If you could relive one day of your life exactly as it happened, which would you choose?", phase: 4, answeredBy: "birthday_person" },
+            { id: 93, text: "If you could change one thing about how you were raised, what would it be?", phase: 4, answeredBy: "birthday_person" },
+            { id: 94, text: "What's something you wish more people understood about you?", phase: 4, answeredBy: "birthday_person" },
+            { id: 95, text: "What emotion do you find hardest to express?", phase: 4, answeredBy: "birthday_person" },
+            { id: 96, text: "What's a question you've been afraid to ask me?", phase: 4, answeredBy: "birthday_person" },
+            { id: 97, text: "What do you need to hear more often?", phase: 4, answeredBy: "birthday_person" },
+            { id: 98, text: "What's something you're still healing from?", phase: 4, answeredBy: "birthday_person" },
+            { id: 99, text: "What keeps you up at night?", phase: 4, answeredBy: "birthday_person" },
+            { id: 100, text: "What makes you feel most vulnerable?", phase: 4, answeredBy: "birthday_person" },
+            { id: 101, text: "What do you wish you could forgive yourself for?", phase: 4, answeredBy: "birthday_person" },
+            { id: 102, text: "What's a compliment you have trouble accepting, and why?", phase: 4, answeredBy: "birthday_person" },
+            { id: 103, text: "What part of yourself do you hide from most people?", phase: 4, answeredBy: "birthday_person" },
+            { id: 104, text: "What do you want to be remembered for?", phase: 4, answeredBy: "birthday_person" },
+            { id: 105, text: "What values do you most want to pass on to your children?", phase: 4, answeredBy: "birthday_person" },
+            { id: 106, text: "What's a life lesson that took you a long time to learn?", phase: 4, answeredBy: "birthday_person" },
+            { id: 107, text: "What does \"success\" mean to you at this point in your life?", phase: 4, answeredBy: "birthday_person" },
+            { id: 108, text: "What do you want your children to say about you when they're adults?", phase: 4, answeredBy: "birthday_person" },
+            { id: 109, text: "How has your definition of happiness changed over the years?", phase: 4, answeredBy: "birthday_person" },
+            { id: 110, text: "What matters most to you right now that didn't matter ten years ago?", phase: 4, answeredBy: "birthday_person" },
+            { id: 111, text: "What's something you want to be known for?", phase: 4, answeredBy: "birthday_person" },
+
+            // Phase 5: Looking Forward (29 questions)
+            { id: 112, text: "What do you need from me in this next year that I might not know about?", phase: 5, answeredBy: "birthday_person" },
+            { id: 113, text: "What do you want more of from our time together this year?", phase: 5, answeredBy: "birthday_person" },
+            { id: 114, text: "What do you need more of in your life right now?", phase: 5, answeredBy: "birthday_person" },
+            { id: 115, text: "What would help you feel more at peace?", phase: 5, answeredBy: "birthday_person" },
+            { id: 116, text: "What's something in your life right now that past-you would be so grateful for?", phase: 5, answeredBy: "birthday_person" },
+            { id: 117, text: "What are three things about your current life that you wouldn't trade?", phase: 5, answeredBy: "birthday_person" },
+            { id: 118, text: "What's something you want to accomplish before your next birthday?", phase: 5, answeredBy: "birthday_person" },
+            { id: 119, text: "What does your ideal ordinary Tuesday look like five years from now?", phase: 5, answeredBy: "birthday_person" },
+            { id: 120, text: "What's a dream you've been quietly holding onto?", phase: 5, answeredBy: "birthday_person" },
+            { id: 121, text: "If money and time were no object, what would you spend the next year doing?", phase: 5, answeredBy: "birthday_person" },
+            { id: 122, text: "What adventure have you been putting off that you'd love to finally take?", phase: 5, answeredBy: "birthday_person" },
+            { id: 123, text: "What skill or hobby have you always wanted to learn?", phase: 5, answeredBy: "birthday_person" },
+            { id: 124, text: "Where in the world do you most want to visit, and why there?", phase: 5, answeredBy: "birthday_person" },
+            { id: 125, text: "What do you want your life to feel like in this next year?", phase: 5, answeredBy: "birthday_person" },
+            { id: 126, text: "What's a goal you have that scares you a little?", phase: 5, answeredBy: "birthday_person" },
+            { id: 127, text: "What's something you want to try that you've been too nervous to start?", phase: 5, answeredBy: "birthday_person" },
+            { id: 128, text: "If you had a full year with zero responsibilities, how would you spend it?", phase: 5, answeredBy: "birthday_person" },
+            { id: 129, text: "If you could send a one-sentence message to yourself one year from now, what would it say?", phase: 5, answeredBy: "birthday_person" },
+            { id: 130, text: "What traditions do you want to create—or continue—for our family?", phase: 5, answeredBy: "birthday_person" },
+            { id: 131, text: "What are you most looking forward to in this new year of life?", phase: 5, answeredBy: "birthday_person" },
+            { id: 132, text: "If you could pick one word to define this next year, what would it be?", phase: 5, answeredBy: "birthday_person" },
+            { id: 133, text: "What do you want to let go of as you enter this new year?", phase: 5, answeredBy: "birthday_person" },
+            { id: 134, text: "What's one thing you want to prioritize this year?", phase: 5, answeredBy: "birthday_person" },
+            { id: 135, text: "What birthday wish are you making this year?", phase: 5, answeredBy: "birthday_person" },
+            { id: 136, text: "How do you want to feel at your next birthday?", phase: 5, answeredBy: "birthday_person" },
+            { id: 137, text: "What do you want more of in this next year?", phase: 5, answeredBy: "birthday_person" },
+            { id: 138, text: "What do you want less of?", phase: 5, answeredBy: "birthday_person" },
+            { id: 139, text: "If this year could give you one thing, what would you ask for?", phase: 5, answeredBy: "birthday_person" },
+            { id: 140, text: "What's one thing I can do to make this year special for you?", phase: 5, answeredBy: "birthday_person" },
+
+            // Phase 6: Cool Down (9 questions)
+            { id: 141, text: "What's the weirdest thing you've ever Googled?", phase: 6, answeredBy: "birthday_person" },
+            { id: 142, text: "What's something you pretend to like but secretly don't?", phase: 6, answeredBy: "birthday_person" },
+            { id: 143, text: "What's the most ridiculous argument we've ever had?", phase: 6, answeredBy: "birthday_person" },
+            { id: 144, text: "What's a trend you refused to participate in that you now regret—or still don't regret?", phase: 6, answeredBy: "birthday_person" },
+            { id: 145, text: "What's the worst haircut you've ever had?", phase: 6, answeredBy: "birthday_person" },
+            { id: 146, text: "What's something you thought was cool as a teenager that makes you cringe now?", phase: 6, answeredBy: "birthday_person" },
+            { id: 147, text: "If we switched bodies for a day, what's the first thing you'd do as me?", phase: 6, answeredBy: "birthday_person" },
+            { id: 148, text: "What's the most absurd thing on your bucket list?", phase: 6, answeredBy: "birthday_person" },
+            { id: 149, text: "If you had to eat one meal for the rest of your life, what would it be?", phase: 6, answeredBy: "birthday_person" }
+        ];
+
+        // Session state
+        let state = {
+            currentPhase: 1,
+            currentQuestionId: null,
+            seen: [],
+            skipped: [],
+            bookmarked: [],
+            answeredByPhase: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 },
+            wildcardMode: false,
+            suggestionDismissed: false,
+            isWildcard: false
+        };
+
+        const STORAGE_KEY = 'currents_session';
+        const SUGGESTION_THRESHOLD = 8;
+
+        // Load state from localStorage
+        function loadState() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    state = JSON.parse(saved);
+                } catch (e) {
+                    console.error('Failed to load state:', e);
+                }
+            }
+        }
+
+        // Save state to localStorage
+        function saveState() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        }
+
+        // Get available questions for current phase
+        function getAvailableQuestions(phase) {
+            return QUESTIONS.filter(q => 
+                q.phase === phase && 
+                !state.seen.includes(q.id) && 
+                !state.skipped.includes(q.id)
+            );
+        }
+
+        // Get random question
+        function getRandomQuestion() {
+            let pool;
+            state.isWildcard = false;
+
+            // Wildcard mode: 1 in 10 chance of any phase
+            if (state.wildcardMode && Math.random() < 0.1) {
+                pool = QUESTIONS.filter(q => 
+                    !state.seen.includes(q.id) && 
+                    !state.skipped.includes(q.id)
+                );
+                if (pool.length > 0) {
+                    state.isWildcard = true;
+                }
+            }
+
+            // Normal mode or wildcard pool empty
+            if (!state.isWildcard) {
+                pool = getAvailableQuestions(state.currentPhase);
+            }
+
+            if (pool.length === 0) {
+                return null;
+            }
+
+            const randomIndex = Math.floor(Math.random() * pool.length);
+            return pool[randomIndex];
+        }
+
+        // Display question
+        function displayQuestion(question) {
+            const card = document.getElementById('questionCard');
+            const textEl = document.getElementById('questionText');
+            const whoEl = document.getElementById('whoAnswers');
+            const bookmarkBtn = document.getElementById('bookmarkBtn');
+            const wildcardBadge = document.getElementById('wildcardBadge');
+
+            if (!question) {
+                textEl.innerHTML = '<div class="no-questions"><p>No more questions in this phase!</p><p>Try moving to the next phase or reset your session.</p></div>';
+                whoEl.style.display = 'none';
+                bookmarkBtn.style.display = 'none';
+                wildcardBadge.style.display = 'none';
+                document.getElementById('nextBtn').disabled = true;
+                document.getElementById('skipBtn').disabled = true;
+                return;
+            }
+
+            state.currentQuestionId = question.id;
+            textEl.textContent = question.text;
+            
+            // Who answers indicator
+            whoEl.style.display = 'block';
+            if (question.answeredBy === 'birthday_person') {
+                whoEl.textContent = 'She answers';
+                whoEl.className = 'who-answers birthday-person';
+            } else {
+                whoEl.textContent = 'He answers';
+                whoEl.className = 'who-answers partner';
+            }
+
+            // Bookmark indicator
+            bookmarkBtn.style.display = 'flex';
+            if (state.bookmarked.includes(question.id)) {
+                bookmarkBtn.classList.add('bookmarked');
+            } else {
+                bookmarkBtn.classList.remove('bookmarked');
+            }
+
+            // Wildcard badge
+            if (state.isWildcard && question.phase !== state.currentPhase) {
+                wildcardBadge.textContent = `Phase ${question.phase}`;
+                wildcardBadge.style.display = 'block';
+            } else {
+                wildcardBadge.style.display = 'none';
+            }
+
+            document.getElementById('nextBtn').disabled = false;
+            document.getElementById('skipBtn').disabled = false;
+
+            saveState();
+        }
+
+        // Update phase UI
+        function updatePhaseUI() {
+            const phase = PHASES[state.currentPhase - 1];
+            document.getElementById('phaseName').textContent = phase.name;
+
+            // Update phase dots in selector
+            updatePhaseDots();
+            
+            // Update phase menu active state
+            updatePhaseMenu();
+        }
+
+        // Update phase dots in selector
+        function updatePhaseDots() {
+            const dots = document.querySelectorAll('#phaseDots .dot');
+            dots.forEach((dot, index) => {
+                const phaseNum = index + 1;
+                dot.classList.remove('active', 'completed');
+                if (phaseNum === state.currentPhase) {
+                    dot.classList.add('active');
+                } else if (phaseNum < state.currentPhase) {
+                    dot.classList.add('completed');
+                }
+            });
+        }
+
+        // Update phase menu active state
+        function updatePhaseMenu() {
+            const items = document.querySelectorAll('.phase-menu-item');
+            items.forEach(item => {
+                const phaseNum = parseInt(item.dataset.phase);
+                item.classList.toggle('active', phaseNum === state.currentPhase);
+            });
+        }
+
+        // Toggle phase menu
+        function togglePhaseMenu() {
+            const menu = document.getElementById('phaseMenu');
+            const selector = document.getElementById('phaseSelector');
+            menu.classList.toggle('open');
+            selector.classList.toggle('open');
+        }
+
+        // Close phase menu
+        function closePhaseMenu() {
+            document.getElementById('phaseMenu').classList.remove('open');
+            document.getElementById('phaseSelector').classList.remove('open');
+        }
+
+        // Select phase from menu
+        function selectPhase(phaseNum) {
+            if (phaseNum !== state.currentPhase) {
+                state.currentPhase = phaseNum;
+                updatePhaseUI();
+                displayQuestion(getRandomQuestion());
+                saveState();
+            }
+            closePhaseMenu();
+        }
+
+        // Next question action
+        function nextQuestion() {
+            if (state.currentQuestionId !== null) {
+                if (!state.seen.includes(state.currentQuestionId)) {
+                    state.seen.push(state.currentQuestionId);
+                    
+                    // Track by phase
+                    const question = QUESTIONS.find(q => q.id === state.currentQuestionId);
+                    if (question) {
+                        state.answeredByPhase[question.phase] = 
+                            (state.answeredByPhase[question.phase] || 0) + 1;
+                    }
+                }
+            }
+            
+            updatePhaseUI();
+            displayQuestion(getRandomQuestion());
+            saveState();
+        }
+
+        // Skip question action
+        function skipQuestion() {
+            if (state.currentQuestionId !== null) {
+                if (!state.skipped.includes(state.currentQuestionId)) {
+                    state.skipped.push(state.currentQuestionId);
+                }
+            }
+            displayQuestion(getRandomQuestion());
+            saveState();
+        }
+
+        // Toggle bookmark
+        function toggleBookmark() {
+            if (state.currentQuestionId === null) return;
+
+            const idx = state.bookmarked.indexOf(state.currentQuestionId);
+            const bookmarkBtn = document.getElementById('bookmarkBtn');
+            
+            if (idx === -1) {
+                state.bookmarked.push(state.currentQuestionId);
+                bookmarkBtn.classList.add('bookmarked');
+            } else {
+                state.bookmarked.splice(idx, 1);
+                bookmarkBtn.classList.remove('bookmarked');
+            }
+            saveState();
+        }
+
+        // Show summary modal
+        function showSummary() {
+            closePhaseMenu();
+            const modal = document.getElementById('summaryModal');
+            
+            // Calculate totals
+            const totalAnswered = state.seen.length;
+            const totalBookmarked = state.bookmarked.length;
+
+            document.getElementById('totalAnswered').textContent = totalAnswered;
+            document.getElementById('totalBookmarked').textContent = totalBookmarked;
+
+            // Phase breakdown
+            const breakdownEl = document.getElementById('phaseBreakdown');
+            breakdownEl.innerHTML = '';
+            PHASES.forEach(phase => {
+                const count = state.answeredByPhase[phase.number] || 0;
+                const row = document.createElement('div');
+                row.className = 'phase-row';
+                row.innerHTML = `<span>${phase.name}</span><span>${count}</span>`;
+                breakdownEl.appendChild(row);
+            });
+
+            // Bookmarks list
+            const bookmarksEl = document.getElementById('bookmarksList');
+            bookmarksEl.innerHTML = '';
+            if (state.bookmarked.length === 0) {
+                bookmarksEl.innerHTML = '<p class="no-bookmarks">No bookmarked questions yet</p>';
+            } else {
+                state.bookmarked.forEach(id => {
+                    const question = QUESTIONS.find(q => q.id === id);
+                    if (question) {
+                        const item = document.createElement('div');
+                        item.className = 'bookmark-item';
+                        item.innerHTML = `
+                            <p>${question.text}</p>
+                            <p class="phase-tag">Phase ${question.phase}: ${PHASES[question.phase - 1].name}</p>
+                        `;
+                        bookmarksEl.appendChild(item);
+                    }
+                });
+            }
+
+            modal.classList.add('active');
+        }
+
+        // Close summary modal
+        function closeSummary() {
+            document.getElementById('summaryModal').classList.remove('active');
+        }
+
+        // Reset session
+        function resetSession() {
+            closePhaseMenu();
+            if (confirm('Start a new session? All progress will be cleared.')) {
+                state = {
+                    currentPhase: 1,
+                    currentQuestionId: null,
+                    seen: [],
+                    skipped: [],
+                    bookmarked: [],
+                    answeredByPhase: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 },
+                    wildcardMode: false,
+                    suggestionDismissed: false,
+                    isWildcard: false
+                };
+                saveState();
+                document.getElementById('wildcardToggle').checked = false;
+                closeSummary();
+                updatePhaseUI();
+                displayQuestion(getRandomQuestion());
+            }
+        }
+
+        // Event listeners
+        document.getElementById('nextBtn').addEventListener('click', nextQuestion);
+        document.getElementById('skipBtn').addEventListener('click', skipQuestion);
+
+        // Close modal on overlay click
+        document.getElementById('summaryModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeSummary();
+            }
+        });
+
+        // Close phase menu when clicking outside
+        document.addEventListener('click', function(e) {
+            const menu = document.getElementById('phaseMenu');
+            const selector = document.getElementById('phaseSelector');
+            if (!menu.contains(e.target) && !selector.contains(e.target)) {
+                closePhaseMenu();
+            }
+        });
+
+        // Initialize app
+        function init() {
+            loadState();
+            updatePhaseUI();
+            
+            // If we have a current question, try to display it
+            if (state.currentQuestionId) {
+                const currentQ = QUESTIONS.find(q => q.id === state.currentQuestionId);
+                if (currentQ && !state.seen.includes(currentQ.id) && !state.skipped.includes(currentQ.id)) {
+                    displayQuestion(currentQ);
+                } else {
+                    displayQuestion(getRandomQuestion());
+                }
+            } else {
+                displayQuestion(getRandomQuestion());
+            }
+        }
+
+        // Start the app
+        init();
+    </script>
+</body>
+</html>
