@@ -181,6 +181,11 @@
             padding: 8px;
             margin-bottom: 10px;
             flex-shrink: 0;
+            max-height: min(68vh, calc(100vh - var(--safe-top) - 120px));
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+            padding-bottom: calc(10px + var(--safe-bottom));
         }
 
         .phase-menu.open {
@@ -279,6 +284,7 @@
             justify-content: center;
             min-height: 0;
             overflow: hidden;
+            transition: opacity 0.28s cubic-bezier(0.4, 0, 0.2, 1), transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .question-card {
@@ -391,6 +397,13 @@
             gap: 10px;
             padding-top: 12px;
             flex-shrink: 0;
+        }
+
+        body.phase-menu-open .card-area {
+            opacity: 0;
+            transform: translateY(10px);
+            pointer-events: none;
+            transition-duration: 0s, 0s;
         }
 
         .actions button {
@@ -699,10 +712,14 @@
     <div class="container">
         <div class="header-bar">
             <header class="header">
-                <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
-                    <path d="M2 12c.6-.6 1.4-1 2.5-1 2.2 0 2.2 2 4.4 2s2.2-2 4.4-2 2.2 2 4.4 2c1.1 0 1.9-.4 2.5-1"></path>
-                    <path d="M2 7c.6-.6 1.4-1 2.5-1 2.2 0 2.2 2 4.4 2s2.2-2 4.4-2 2.2 2 4.4 2c1.1 0 1.9-.4 2.5-1"></path>
-                    <path d="M2 17c.6-.6 1.4-1 2.5-1 2.2 0 2.2 2 4.4 2s2.2-2 4.4-2 2.2 2 4.4 2c1.1 0 1.9-.4 2.5-1"></path>
+                <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round">
+                    <path d="M2 12c.6-.6 1.4-1 2.5-1 2.2 0 2.2 2 4.4 2s2.2-2 4.4-2 2.2 2 4.4 2c1.1 0 1.9-.4 2.5-1">
+                    </path>
+                    <path d="M2 7c.6-.6 1.4-1 2.5-1 2.2 0 2.2 2 4.4 2s2.2-2 4.4-2 2.2 2 4.4 2c1.1 0 1.9-.4 2.5-1">
+                    </path>
+                    <path d="M2 17c.6-.6 1.4-1 2.5-1 2.2 0 2.2 2 4.4 2s2.2-2 4.4-2 2.2 2 4.4 2c1.1 0 1.9-.4 2.5-1">
+                    </path>
                 </svg>
                 <h1>Currents</h1>
             </header>
@@ -913,7 +930,7 @@
 
             // Phase 3: Us (24 questions)
             { id: 55, text: "What's a birthday we've spent together that stands out in your memory?", phase: 3, answeredBy: "partner" },
-            { id: 56, text: "What's something I've watched you master this year that fills me with pride?", phase: 3, answeredBy: "partner" },
+            { id: 56, text: "What's something I've watched you improve at this year which fills me with pride?", phase: 3, answeredBy: "partner" },
             { id: 57, text: "What's a quality in you that I've come to appreciate even more over time?", phase: 3, answeredBy: "partner" },
             { id: 58, text: "What's something you do that you probably don't realize makes my day better?", phase: 3, answeredBy: "partner" },
             { id: 59, text: "What moment this past year made me fall in love with you all over again?", phase: 3, answeredBy: "partner" },
@@ -1178,14 +1195,16 @@
         function togglePhaseMenu() {
             const menu = document.getElementById('phaseMenu');
             const selector = document.getElementById('phaseSelector');
-            menu.classList.toggle('open');
-            selector.classList.toggle('open');
+            const isOpen = menu.classList.toggle('open');
+            selector.classList.toggle('open', isOpen);
+            document.body.classList.toggle('phase-menu-open', isOpen);
         }
 
         // Close phase menu
         function closePhaseMenu() {
             document.getElementById('phaseMenu').classList.remove('open');
             document.getElementById('phaseSelector').classList.remove('open');
+            document.body.classList.remove('phase-menu-open');
         }
 
         // Select phase from menu
